@@ -1,5 +1,7 @@
 import typing
 from io import BytesIO, BufferedReader
+
+
 class Integer(int):
     length: int
 
@@ -11,17 +13,22 @@ class Integer(int):
     def deserialize(cls, number: BytesIO) -> int:
         return int.from_bytes(number.read(cls.length), "big")
 
+
 class ByteInt(Integer):
     length: int = 1
+
 
 class Short(Integer):
     length: int = 2
 
+
 class Int(Integer):
     length: int = 4
 
+
 class Long(Integer):
     length: int = 8
+
 
 class String(str):
     # Strings are encoded with their length as the first two bytes. This matches Java's built
@@ -37,7 +44,6 @@ class String(str):
         length = int.from_bytes(string.read(cls.size_length), "big")
         return string.read(length).decode("utf-8")
 
-T = typing.TypeVar('T')
 
 class List:
     # The list is serialized with the first 4 bytes containing the length of the list
@@ -48,7 +54,7 @@ class List:
         length = len(list_).to_bytes(cls.size_length, "big")
         items = bytes()
         for x in list_:
-            items += (type_.serialize(x))
+            items += type_.serialize(x)
         return length + items
 
     @classmethod
@@ -68,6 +74,7 @@ class List:
             items.append(i)
 
         return items
+
 
 def serialize_object(item):
     """
